@@ -27,6 +27,7 @@ class Writer implements Runnable {
                 chars[--size] = (char)(rand.nextInt(75) + '0');
             }
             out.write(chars);
+            out.write("_Writer start_");
             out.flush();
             out.close();
             System.out.println("written!");
