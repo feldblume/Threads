@@ -134,7 +134,7 @@ class Rewriter implements Runnable {
         try {
             synchronized (holder){
                 do holder.wait(); while(holder.getState() != 2);
-            };
+            }; 
             int i = 0;
             while(i++ < Const.ITERATIONS) {
                 BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
