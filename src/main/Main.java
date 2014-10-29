@@ -3,9 +3,7 @@ package main;
 import java.io.*;
 import java.util.Random;
 
-/**
- * Created by nataliya on 29.10.14.
- */
+
 public class Main {
     public static void main(String[] args) {
         Writer w = new Writer();
@@ -24,6 +22,7 @@ class Writer implements Runnable {
             int size = 1000;
             char[] chars = new char[size];
             Random rand = new Random();
+            out.write("_Writer start_");
             while(size > 0) {
                 chars[--size] = (char)(rand.nextInt(75) + '0');
             }
