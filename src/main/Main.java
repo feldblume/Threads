@@ -41,6 +41,7 @@ class Holder {
         // 2 - sorted
         // 3 - ready
         state = newState;
+        System.out.println("state = " + state);
         notifyAll();
     }
     public int getState() {
@@ -57,7 +58,7 @@ class Writer implements Runnable {
     public void run() {
         try {
             synchronized (holder){
-                do wait(); while(holder.getState() != 3);
+                do holder.wait(); while(holder.getState() != 3);
             }
             int i = 0;
             while(i++ < Const.ITERATIONS){
@@ -92,7 +93,7 @@ class Sorter implements Runnable {
         while(i++ < Const.ITERATIONS) {
             try {
                 synchronized (holder){
-                    do wait(); while(holder.getState() != 1);
+                    do holder.wait(); while(holder.getState() != 1);
                 }
                 BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
                 out.write("<Sorter start>");
@@ -132,7 +133,7 @@ class Rewriter implements Runnable {
     public void run() {
         try {
             synchronized (holder){
-                do wait(); while(holder.getState() != 2);
+                do holder.wait(); while(holder.getState() != 2);
             };
             int i = 0;
             while(i++ < Const.ITERATIONS) {
