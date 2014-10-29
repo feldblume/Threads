@@ -12,6 +12,7 @@ public class Main {
         s.run();
         Rewriter rw = new Rewriter(s);
         rw.run();
+        System.out.println("Success");
     }
 }
 class Writer implements Runnable {
@@ -27,8 +28,8 @@ class Writer implements Runnable {
                 chars[--size] = (char)(rand.nextInt(75) + '0');
             }
             out.write(chars);
-            out.write("_Writer start_");
-            out.write("_Writer start_");
+            out.write("_Writer end_");
+           
             out.flush();
             out.close();
             System.out.println("written!");
