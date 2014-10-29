@@ -1,93 +1,112 @@
 package main;
 
+import com.sun.glass.ui.Size;
+
 import java.io.*;
 import java.util.Random;
 
+interface Const {
+    int SIZE = 20;
+}
 
 public class Main {
     public static void main(String[] args) {
         Writer w = new Writer();
-        w.run();
         Sorter s = new Sorter();
         s.run();
+        w.run();
         Rewriter rw = new Rewriter(s);
         rw.run();
-        System.out.println("Success");
     }
 }
+
+class Holder {
+    char[] chars = new char[Const.SIZE];
+}
+
 class Writer implements Runnable {
+    Holder holder;
+    Writer(Holder h){
+        holder = h;
+    }
     @Override
     public void run() {
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii"));
-            int size = 1000;
-            char[] chars = new char[size];
-            Random rand = new Random();
-            out.write("_Writer start_");
-            while(size > 0) {
-                chars[--size] = (char)(rand.nextInt(75) + '0');
+            int i = 20;
+            while(i-- >0){
+                BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii"));
+                Random rand = new Random();
+                out.write("<Writer start>");
+                int i = Const.SIZE;
+                while(i > 0) {
+                    holder.chars[--i] = (char)(rand.nextInt(75) + '0');
+                }
+                out.write(holder.chars);
+                out.write("<Writer end>");
+                out.flush();
+                out.close();
             }
-            out.write(chars);
-            out.write("_Writer end_");
-           
-            out.flush();
-            out.close();
-            System.out.println("written!");
-            notify();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
 class Sorter implements Runnable {
-    int size = 1000;
-    char[] chars = new char[size];
+    Holder holder;
+    Sorter(Holder h){
+        holder = h;
+    }
     @Override
-    public void run() {
-        try {
-            this.wait();
-            BufferedReader in = new BufferedReader(new FileReader("mess.ascii"));
-            in.read(chars);
-            in.close();
-            this.sort();
-            System.out.println(chars); // check
-            this.notifyAll();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public  void run() {
+        int i = 0;
+        while(i++ <20) {
+            try {
+                BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
+                out.write("<Sorter start>");
+                sort();
+                out.write("<Sorter end>");
+                out.flush();
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
     private void sort(){
-        for(int i = 0; i<size-1; i++)
-            for(int j = i; j<size; j++)
-                if((int)chars[i] > (int)chars[j]){
-                    char temp = chars[i];
-                    chars[i] = chars[j];
-                    chars[j] = temp;
+        for(int i = 0; i<Const.SIZE-1; i++)
+            for(int j = i; j<Const.SIZE; j++)
+                if((int)holder.chars[i] > (int)holder.chars[j]){
+                    char temp = holder.chars[i];
+                    holder.chars[i] = holder.chars[j];
+                    holder.chars[j] = temp;
                 }
     }
 }
+
 class Rewriter implements Runnable {
-    int size = 1000;
-    Sorter sorter;
-    char[] chars = new char[size];
+    Holder holder;
+    Rewriter(Holder h){
+        holder = h;
+    }
     Rewriter(Sorter s) {
         sorter = s;
         this.chars = s.chars.clone();
     }
     @Override
-    public void run() {
+    public synchronized void run() {
         try {
-            this.wait();
-            BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii"));
+//            this.wait();
+            BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii",true));
+            out.write("_Rewriter start_");
             out.write(this.chars);
+            out.write("_Rewriter end_");
             out.flush();
             out.close();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
