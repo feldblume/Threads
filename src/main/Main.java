@@ -28,6 +28,7 @@ class Writer implements Runnable {
             }
             out.write(chars);
             out.write("_Writer start_");
+            out.write("_Writer start_");
             out.flush();
             out.close();
             System.out.println("written!");
