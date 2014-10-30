@@ -110,7 +110,6 @@ class Sorter implements Runnable {
             }
         }
     }
-
     private void sort(){
         for(int i = 0; i<Const.SIZE-1; i++)
             for(int j = i; j<Const.SIZE; j++)
