@@ -98,6 +98,7 @@ class Sorter implements Runnable {
                     sort();
                     out.write("<Sorter end>");
                     out.flush();
+
                     out.close();
                     holder.setState(2);
                 }
