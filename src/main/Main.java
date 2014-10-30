@@ -1,7 +1,5 @@
 package main;
 
-import com.sun.glass.ui.Size;
-
 import java.io.*;
 import java.util.Random;
 
@@ -20,13 +18,13 @@ public class Main {
             e.printStackTrace();
         }
         Holder h = new Holder();
-
         Writer w = new Writer(h);
-        w.run();
         Sorter s = new Sorter(h);
+        ReWriter rw = new ReWriter(h);
         s.run();
-        Rewriter rw = new Rewriter(h);
+        w.run();
         rw.run();
+
     }
 }
 
@@ -42,7 +40,7 @@ class Holder {
         // 3 - ready
         state = newState;
         System.out.println("state = " + state);
-        notifyAll();
+        this.notifyAll();
     }
     public int getState() {
         return state;
@@ -58,10 +56,9 @@ class Writer implements Runnable {
     public void run() {
         try {
             synchronized (holder){
-                do holder.wait(); while(holder.getState() != 3);
-            }
-            int i = 0;
-            while(i++ < Const.ITERATIONS){
+                while(holder.getState() != 3)
+                    holder.wait();
+
                 BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii",true));
                 Random rand = new Random();
                 out.write("<Writer start>");
@@ -75,6 +72,7 @@ class Writer implements Runnable {
                 out.close();
                 holder.setState(1);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -92,16 +90,17 @@ class Sorter implements Runnable {
         int i = 0;
         while(i++ < Const.ITERATIONS) {
             try {
-                synchronized (holder){
-                    do holder.wait(); while(holder.getState() != 1);
+                synchronized (holder) {
+                    while (holder.getState() != 1)
+                        holder.wait();
+                    BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
+                    out.write("<Sorter start>");
+                    sort();
+                    out.write("<Sorter end>");
+                    out.flush();
+                    out.close();
+                    holder.setState(2);
                 }
-                BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
-                out.write("<Sorter start>");
-                sort();
-                out.write("<Sorter end>");
-                out.flush();
-                out.close();
-                holder.setState(2);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -123,28 +122,29 @@ class Sorter implements Runnable {
     }
 }
 
-class Rewriter implements Runnable {
+class ReWriter implements Runnable {
     final Holder holder;
-    Rewriter(Holder h){
+    ReWriter(Holder h){
         holder = h;
     }
-
     @Override
     public void run() {
         try {
-            synchronized (holder){
-                do holder.wait(); while(holder.getState() != 2);
-            }; 
             int i = 0;
             while(i++ < Const.ITERATIONS) {
-                BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
-                out.write("<Rewriter start>");
-                out.write(holder.chars);
-                out.write("<Rewriter end>");
-                out.flush();
-                out.close();
-                holder.setState(3);
+                synchronized (holder) {
+                    while (holder.getState() != 2)
+                        holder.wait();
+                    BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
+                    out.write("<Rewriter start>");
+                    out.write(holder.chars);
+                    out.write("<Rewriter end>");
+                    out.flush();
+                    out.close();
+                    holder.setState(3);
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
