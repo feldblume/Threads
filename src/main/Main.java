@@ -144,7 +144,6 @@ class ReWriter implements Runnable {
                     holder.setState(3);
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
