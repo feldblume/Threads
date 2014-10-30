@@ -21,9 +21,10 @@ public class Main {
         Writer w = new Writer(h);
         Sorter s = new Sorter(h);
         ReWriter rw = new ReWriter(h);
-        s.run();
-        w.run();
-        rw.run();
+
+        new Thread(rw,"name").start();
+        new Thread(s,"name").start();
+        new Thread(w,"name").start();
 
     }
 }
@@ -34,12 +35,12 @@ class Holder {
     Holder(){
         state = 3;
     }
-    public synchronized void  setState(int newState) {
+    public void  setState(int newState) {
         // 1 - filled
         // 2 - sorted
         // 3 - ready
         state = newState;
-        System.out.println("state = " + state);
+//        System.out.println("state = " + state);
         this.notifyAll();
     }
     public int getState() {
@@ -55,30 +56,35 @@ class Writer implements Runnable {
     @Override
     public void run() {
         try {
-            synchronized (holder){
-                while(holder.getState() != 3)
-                    holder.wait();
-
-                BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii",true));
-                Random rand = new Random();
-                out.write("<Writer start>");
-                int j = Const.SIZE;
-                while(j > 0) {
-                    holder.chars[--j] = (char)(rand.nextInt(75) + '0');
+            int i = 0;
+            while(i++ < Const.ITERATIONS) {
+                synchronized (holder){
+                    while(holder.getState() != 3) {
+                        System.out.println("Writer is waiting");
+                        holder.wait();
+                    }
+                    System.out.println("Writer is GO");
+                    BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii",true));
+                    Random rand = new Random();
+                    out.write("<Writer start>");
+                    int j = Const.SIZE;
+                    while(j > 0) {
+                        holder.chars[--j] = (char)(rand.nextInt(75) + '0');
+                    }
+                    out.write(holder.chars);
+                    out.write("<Writer end>");
+                    out.flush();
+                    out.close();
+                    holder.setState(1);
+                    System.out.println("Writer gives way to Sorter");
                 }
-                out.write(holder.chars);
-                out.write("<Writer end>");
-                out.flush();
-                out.flush();
-                out.close();
-                holder.setState(1);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 }
 class Sorter implements Runnable {
@@ -92,8 +98,11 @@ class Sorter implements Runnable {
         while(i++ < Const.ITERATIONS) {
             try {
                 synchronized (holder) {
-                    while (holder.getState() != 1)
+                    while (holder.getState() != 1) {
+                        System.out.println("sorter is waiting");
                         holder.wait();
+                    }
+                    System.out.println("Sorter is GO");
                     BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
                     out.write("<Sorter start>");
                     sort();
@@ -101,6 +110,7 @@ class Sorter implements Runnable {
                     out.flush();
                     out.close();
                     holder.setState(2);
+                    System.out.println("Sorter gives way to ReWriter");
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -133,8 +143,11 @@ class ReWriter implements Runnable {
             int i = 0;
             while(i++ < Const.ITERATIONS) {
                 synchronized (holder) {
-                    while (holder.getState() != 2)
+                    while (holder.getState() != 2) {
+                        System.out.println("Rewriter is waiting");
                         holder.wait();
+                    }
+                    System.out.println("ReWriter is GO");
                     BufferedWriter out = new BufferedWriter(new FileWriter("mess.ascii", true));
                     out.write("<Rewriter start>");
                     out.write(holder.chars);
@@ -142,6 +155,7 @@ class ReWriter implements Runnable {
                     out.flush();
                     out.close();
                     holder.setState(3);
+                    System.out.println("ReWriter gives way to Writer");
                 }
             }
         } catch (IOException e) {
