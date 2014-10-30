@@ -69,6 +69,7 @@ class Writer implements Runnable {
                 out.write(holder.chars);
                 out.write("<Writer end>");
                 out.flush();
+                out.flush();
                 out.close();
                 holder.setState(1);
             }
