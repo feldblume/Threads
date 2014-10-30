@@ -7,7 +7,6 @@ interface Const {
     int SIZE = 200;
     int ITERATIONS = 1;
 }
-
 public class Main {
     public static void main(String[] args) {
         try {
@@ -27,7 +26,6 @@ public class Main {
         new Thread(w,"name").start();
     }
 }
-
 class Holder {
     char[] chars = new char[Const.SIZE];
     private int state;
@@ -46,7 +44,6 @@ class Holder {
         return state;
     }
 }
-
 class Writer implements Runnable {
     final Holder holder;
     Writer(Holder h){
@@ -83,7 +80,6 @@ class Writer implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 }
 class Sorter implements Runnable {
@@ -130,7 +126,6 @@ class Sorter implements Runnable {
                 }
     }
 }
-
 class ReWriter implements Runnable {
     final Holder holder;
     ReWriter(Holder h){
