@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.Random;
 
 interface Const {
-    int SIZE = 20;
-    int ITERATIONS = 20;
+    int SIZE = 200;
+    int ITERATIONS = 1;
 }
 
 public class Main {
@@ -25,7 +25,6 @@ public class Main {
         new Thread(rw,"name").start();
         new Thread(s,"name").start();
         new Thread(w,"name").start();
-
     }
 }
 
