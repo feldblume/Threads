@@ -164,6 +164,7 @@ class ReWriter implements Runnable {
                     out.close();
                     holder.setState(3);
                     System.out.println(Timer.getTime() + "ms : ReWriter gives way to Writer");
+                    System.out.println("sic!");
                 }
             }
         } catch (IOException e) {
