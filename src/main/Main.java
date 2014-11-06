@@ -125,7 +125,6 @@ class ReWriter implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
->>>>>>> 38257a588c6da6da3295585f3cb6a10552dec697
     }
 }
 
