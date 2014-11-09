@@ -7,11 +7,25 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static tasks.Const.*;
+
 /**
  * Created by Jack on 11/6/14.
  */
+
+/**
+ * Class for sorting data
+ *
+ */
 public class SortingTask implements Runnable {
+
     final Holder holder;
+
+    /**
+     * Constructor
+     * @param h holder, associated with Sorterq
+     * @since v3.0
+     */
     public SortingTask(Holder h){
         holder = h;
     }
@@ -21,7 +35,7 @@ public class SortingTask implements Runnable {
         while(i++ < Const.ITERATIONS) {
             try {
                 synchronized (holder) {
-                    while (holder.getState() != 1) {
+                    while (holder.getState() != FILLED) {
                         System.out.println(Timer.getTime() + "ms : SortingTask is waiting");
                         holder.wait();
                     }
@@ -32,7 +46,7 @@ public class SortingTask implements Runnable {
                     out.write("<" + Timer.getTime() + "ms: SortingTask end> \n");
                     out.flush();
                     out.close();
-                    holder.setState(2);
+                    holder.setState(SORTED);
                     System.out.println(Timer.getTime() + "ms : SortingTask gives way to WriterTask");
                 }
             } catch (FileNotFoundException e) {

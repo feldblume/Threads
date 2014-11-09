@@ -7,21 +7,33 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
+import static tasks.Const.*;
+
 /**
  * Created by Jack on 11/6/14.
  */
 public class GenerateCharsTask implements Runnable {
     final Holder holder;
+
+    /**
+     * This is the constructor which creates GenerateCharsTask based on holder object
+     * @param h holder object
+     */
     public GenerateCharsTask(Holder h){
         holder = h;
     }
+
+
     @Override
+    /**
+     * Runs a task
+     */
     public void run() {
         try {
             int i = 0;
-            while(i++ < Const.ITERATIONS) {
+            while(i++ < ITERATIONS) {
                 synchronized (holder){
-                    while(holder.getState() != 3) {
+                    while(holder.getState() != READY) {
                         System.out.println(Timer.getTime() + "ms : GenerateCharsTask is waiting");
                         holder.wait();
                     }
@@ -38,7 +50,7 @@ public class GenerateCharsTask implements Runnable {
                     out.write("<" + Timer.getTime() + "ms: GenerateCharsTask end> \n");
                     out.flush();
                     out.close();
-                    holder.setState(1);
+                    holder.setState(FILLED);
                     System.out.println(Timer.getTime() + "ms : GenerateCharsTask gives way to SortingTask");
                 }
             }
